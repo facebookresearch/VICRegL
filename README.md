@@ -1,6 +1,6 @@
 # VICRegL: Self-Supervised Learning of Local Visual Features
 
-This repository provides a PyTorch implementation and pretrained models for VICRegL, a self-supervsied pretraining method for leanring global and local features, described in the paper [VICRegL: Self-Supervised Learning of Local Visual Features](https://arxiv.org/abs/?), published to NeurIPS 2022.\
+This repository provides a PyTorch implementation and pretrained models for VICRegL, a self-supervsied pretraining method for learning global and local features, described in the paper [VICRegL: Self-Supervised Learning of Local Visual Features](https://arxiv.org/abs/2210.01571), published to NeurIPS 2022.\
 Adrien Bardes, Jean Ponce and Yann LeCun\
 Meta AI, Inria
 

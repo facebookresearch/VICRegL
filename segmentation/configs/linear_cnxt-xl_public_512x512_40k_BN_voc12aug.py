@@ -40,7 +40,7 @@ model = dict(
 )
 
 optimizer = dict(
-    _delete_=True, type="AdamW", lr=3e-4, betas=(0.9, 0.999), weight_decay=0.05
+    _delete_=True, type="AdamW", lr=8e-5, betas=(0.9, 0.999), weight_decay=0.05
 )
 
 lr_config = dict(
