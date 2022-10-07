@@ -7,9 +7,9 @@
 
 
 _base_ = [
-    '../_base_/datasets/cityscapes.py',
-    '../_base_/default_runtime.py',
-    '../_base_/schedules/schedule_40k.py'
+    "../_base_/datasets/cityscapes.py",
+    "../_base_/default_runtime.py",
+    "../_base_/schedules/schedule_40k.py",
 ]
 
 norm_cfg = dict(type="SyncBN", requires_grad=True)
@@ -26,6 +26,7 @@ model = dict(
         norm_eval=False,
         style="pytorch",
         contract_dilation=True,
+        frozen_stages=4,
     ),
     decode_head=dict(
         type="LinearHead",

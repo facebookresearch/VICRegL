@@ -13,7 +13,7 @@ class="center">
 
 ## Pre-trained Models
 
-You can choose to download only the weights of the pretrained backbone used for downstream tasks, or the full checkpoint which contains backbone and expander/projector weights. **linear cls.** is the linear classification accuracy on the validation set of ImageNet, and **linear seg.** is the linear frozen mIoU on the validation set of Pascal VOC.
+You can choose to download only the weights of the pretrained backbone used for downstream tasks, or the full checkpoint which contains backbone and expander/projector weights. All the models are pretrained on ImageNet-1k, except the ConvNeXt-XL model which is pretrained on ImageNet-22k. **linear cls.** is the linear classification accuracy on the validation set of ImageNet, and **linear seg.** is the linear frozen mIoU on the validation set of Pascal VOC.
 
 <table>
   <tr>

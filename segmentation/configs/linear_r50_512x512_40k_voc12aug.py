@@ -15,7 +15,6 @@ _base_ = [
 norm_cfg = dict(type="SyncBN", requires_grad=True)
 model = dict(
     type="EncoderDecoder",
-    pretrained="open-mmlab://resnet50_v1c",
     backbone=dict(
         type="ResNet",
         depth=50,
@@ -27,6 +26,7 @@ model = dict(
         norm_eval=False,
         style="pytorch",
         contract_dilation=True,
+        frozen_stages=4,
     ),
     decode_head=dict(
         type="LinearHead",
