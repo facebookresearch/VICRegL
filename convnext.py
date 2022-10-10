@@ -79,8 +79,8 @@ class ConvNeXt(nn.Module):
         num_classes=1000,
         depths=[3, 3, 9, 3],
         dims=[96, 192, 384, 768],
-        drop_path_rate=0.0,
-        layer_scale_init_value=1e-6,
+        drop_path_rate=0.1,
+        layer_scale_init_value=0.0,
         head_init_scale=1.0,
     ):
         super().__init__()
