@@ -529,7 +529,6 @@ class VICRegL(nn.Module):
         labels = inputs["labels"]
         classif_loss = F.cross_entropy(outputs["logits"][0], labels)
         acc1, acc5 = utils.accuracy(outputs["logits"][0], labels, topk=(1, 5))
-        loss = loss + classif_loss
         logs.update(dict(cls_l=classif_loss, top1=acc1, top5=acc5, l=loss))
         if is_val:
             classif_loss_val = F.cross_entropy(outputs["logits_val"][0], labels)
