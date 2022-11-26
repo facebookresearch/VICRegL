@@ -118,7 +118,9 @@ def main(args):
 
     model = VICRegL(args).cuda(gpu)
     model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[gpu])
+    model = torch.nn.parallel.DistributedDataParallel(model,
+						      device_ids=[gpu],
+						      find_unused_parameters=True)
 
     optimizer = build_optimizer(args, model)
 
