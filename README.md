@@ -113,7 +113,7 @@ model = torch.hub.load('facebookresearch/vicregl:main', 'convnext_xlarge_alpha0p
 
 ## Training
 
-Install PyTorch ([pytorch.org](http://pytorch.org)) and download [ImageNet](https://imagenet.stanford.edu/). The code has been developed for PyTorch version 1.7.1 and torchvision version 0.8.2, but should work with other versions just as well. Setup the ImageNet path in the file [datasets.py](https://github.com/facebookresearch/VICRegL/datasets.py):
+Install PyTorch ([pytorch.org](http://pytorch.org)) and download [ImageNet](https://imagenet.stanford.edu/). The code has been developed for PyTorch version 1.8.1 and torchvision version 0.9.1, but should work with other versions just as well. Setup the ImageNet path in the file [datasets.py](https://github.com/facebookresearch/VICRegL/datasets.py):
 
 ```
 IMAGENET_PATH = "path/to/imagenet"
