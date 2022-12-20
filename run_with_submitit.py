@@ -124,8 +124,6 @@ def main():
         **kwargs,
     )
 
-    executor.update_parameters(name="vicregl")
-
     args.dist_url = get_init_file().as_uri()
 
     trainer = Trainer(args)

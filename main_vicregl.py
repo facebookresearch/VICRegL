@@ -376,12 +376,12 @@ class VICRegL(nn.Module):
         iter_ = 0
         for i in range(2):
             for j in np.delete(np.arange(np.sum(num_views)), i):
-                inv_loss, var_loss, cov_loss = self._local_loss(
-                    maps_embedding[i],
-                    maps_embedding[j],
-                    locations[i],
-                    locations[j],
+                inv_loss_this, var_loss_this, cov_loss_this = self._local_loss(
+                    maps_embedding[i], maps_embedding[j], locations[i], locations[j],
                 )
+                inv_loss = inv_loss + inv_loss_this
+                var_loss = var_loss + var_loss_this
+                cov_loss = cov_loss + cov_loss_this
                 iter_ += 1
 
         if self.args.fast_vc_reg:
@@ -399,7 +399,7 @@ class VICRegL(nn.Module):
                 x = x - x.mean(dim=-2, keepdim=True)
                 cov_x = torch.einsum("...nc,...nd->...cd", x, x) / (sample_size - 1)
                 cov_loss = cov_x[..., non_diag_mask].pow(2).sum(-1) / num_channels
-                cov_loss = cov_loss.mean()
+                cov_loss = cov_loss + cov_loss.mean()
                 iter_ = iter_ + 1
             var_loss = self.args.var_coeff * var_loss / iter_
             cov_loss = self.args.cov_coeff * cov_loss / iter_
@@ -449,15 +449,16 @@ class VICRegL(nn.Module):
             return torch.mean(x.std(dim=0))
 
         representation = utils.batch_all_gather(outputs["representation"][0])
-        embedding = utils.batch_all_gather(outputs["embedding"][0])
-
         corr = correlation_metric(representation)
-        core = correlation_metric(embedding)
-
         stdrepr = std_metric(representation)
-        stdemb = std_metric(embedding)
 
-        return dict(stdr=stdrepr, stde=stdemb, corr=corr, core=core)
+        if self.args.alpha > 0.0:
+            embedding = utils.batch_all_gather(outputs["embedding"][0])
+            core = correlation_metric(embedding)
+            stdemb = std_metric(embedding)
+            return dict(stdr=stdrepr, stde=stdemb, corr=corr, core=core)
+
+        return dict(stdr=stdrepr, corr=corr)
 
     def forward_networks(self, inputs, is_val):
         outputs = {
@@ -471,8 +472,9 @@ class VICRegL(nn.Module):
             maps, representation = self.backbone(x)
             outputs["representation"].append(representation)
 
-            embedding = self.projector(representation)
-            outputs["embedding"].append(embedding)
+            if self.args.alpha > 0.0:
+                embedding = self.projector(representation)
+                outputs["embedding"].append(embedding)
 
             if self.args.alpha < 1.0:
                 maps_embedding = self.maps_projector(maps)
