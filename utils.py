@@ -116,13 +116,16 @@ def gather_center(x):
     return x
 
 
-def MLP(mlp, embedding):
+def MLP(mlp, embedding, norm_layer):
     mlp_spec = f"{embedding}-{mlp}"
     layers = []
     f = list(map(int, mlp_spec.split("-")))
     for i in range(len(f) - 2):
         layers.append(nn.Linear(f[i], f[i + 1]))
-        layers.append(nn.LayerNorm(f[i + 1]))
+        if norm_layer == "batch_norm":
+            layers.append(nn.BatchNorm1d(f[i + 1]))
+        elif norm_layer == "layer_norm":
+            layers.append(nn.LayerNorm(f[i + 1]))
         layers.append(nn.ReLU(True))
     layers.append(nn.Linear(f[-2], f[-1], bias=False))
     return nn.Sequential(*layers)

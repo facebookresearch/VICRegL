@@ -117,6 +117,7 @@ def main(args):
         val_loader, _ = build_loader(args, is_train=False)
 
     model = VICRegL(args).cuda(gpu)
+    print(model)
     model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
     model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[gpu])
 
@@ -258,18 +259,22 @@ class VICRegL(nn.Module):
                 drop_path_rate=args.drop_path_rate,
                 layer_scale_init_value=args.layer_scale_init_value,
             )
+            norm_layer = "layer_norm"
         elif "resnet" in args.arch:
             import resnet
 
             self.backbone, self.representation_dim = resnet.__dict__[args.arch](
                 zero_init_residual=True
             )
+            norm_layer = "batch_norm"
+        else:
+            raise Exception(f"Unsupported backbone {args.arch}.")
 
         if self.args.alpha < 1.0:
-            self.maps_projector = utils.MLP(args.maps_mlp, self.representation_dim)
+            self.maps_projector = utils.MLP(args.maps_mlp, self.representation_dim, norm_layer)
 
         if self.args.alpha > 0.0:
-            self.projector = utils.MLP(args.mlp, self.representation_dim)
+            self.projector = utils.MLP(args.mlp, self.representation_dim, norm_layer)
 
         self.classifier = nn.Linear(self.representation_dim, self.args.num_classes)
 
@@ -477,7 +482,9 @@ class VICRegL(nn.Module):
                 outputs["embedding"].append(embedding)
 
             if self.args.alpha < 1.0:
-                maps_embedding = self.maps_projector(maps)
+                batch_size, num_loc, _ = maps.shape
+                maps_embedding = self.maps_projector(maps.flatten(start_dim=0, end_dim=1))
+                maps_embedding = maps_embedding.view(batch_size, num_loc, -1)
                 outputs["maps_embedding"].append(maps_embedding)
 
             logits = self.classifier(representation.detach())
@@ -615,6 +622,10 @@ def neirest_neighbores_on_location(
     """
     distances = torch.cdist(input_location, candidate_location)
     return neirest_neighbores(input_maps, candidate_maps, distances, num_matches)
+
+
+def exclude_bias_and_norm(p):
+    return p.ndim == 1
 
 
 if __name__ == "__main__":
