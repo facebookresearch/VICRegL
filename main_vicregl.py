@@ -102,7 +102,10 @@ def main(args):
     init_distributed_mode(args)
     print(args)
     gpu = torch.device(args.device)
-
+    
+    # Ensures that stats_file is initialized when calling evalaute(),
+    # even if only the rank 0 process will use it
+    stats_file = None
     if args.rank == 0:
         args.exp_dir.mkdir(parents=True, exist_ok=True)
         stats_file = open(args.exp_dir / "stats.txt", "a", buffering=1)
